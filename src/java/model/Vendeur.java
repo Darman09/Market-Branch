@@ -6,22 +6,19 @@
 package model;
 
 import java.io.Serializable;
-import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -36,10 +33,12 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Vendeur.findByNomVendeur", query = "SELECT v FROM Vendeur v WHERE v.nomVendeur = :nomVendeur")
     , @NamedQuery(name = "Vendeur.findByAdresseVendeur", query = "SELECT v FROM Vendeur v WHERE v.adresseVendeur = :adresseVendeur")
     , @NamedQuery(name = "Vendeur.findByCityVendeur", query = "SELECT v FROM Vendeur v WHERE v.cityVendeur = :cityVendeur")
+    , @NamedQuery(name = "Vendeur.findByEmailAndPasswordVendeur", query = "SELECT v FROM Vendeur v WHERE v.emailVendeur = :emailVendeur AND v.passwordVendeur = :passwordVendeur")
     , @NamedQuery(name = "Vendeur.findByEmailVendeur", query = "SELECT v FROM Vendeur v WHERE v.emailVendeur = :emailVendeur")
     , @NamedQuery(name = "Vendeur.findByPhoneVendeur", query = "SELECT v FROM Vendeur v WHERE v.phoneVendeur = :phoneVendeur")
     , @NamedQuery(name = "Vendeur.findBySiteWebVendeur", query = "SELECT v FROM Vendeur v WHERE v.siteWebVendeur = :siteWebVendeur")
-    , @NamedQuery(name = "Vendeur.findByInformationVendeur", query = "SELECT v FROM Vendeur v WHERE v.informationVendeur = :informationVendeur")})
+    , @NamedQuery(name = "Vendeur.findByPasswordVendeur", query = "SELECT v FROM Vendeur v WHERE v.passwordVendeur = :passwordVendeur")
+})
 public class Vendeur implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -65,10 +64,15 @@ public class Vendeur implements Serializable {
     private String phoneVendeur;
     @Column(name = "site_web_vendeur")
     private String siteWebVendeur;
+    @Lob
     @Column(name = "information_vendeur")
     private String informationVendeur;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idVendeur")
-    private List<Produit> produitList;
+    @Basic(optional = false)
+    @Column(name = "password_vendeur")
+    private String passwordVendeur;
+    @Lob
+    @Column(name = "img_vendeur")
+    private String imgVendeur;
     @JoinColumn(name = "id_commission", referencedColumnName = "id_comission")
     @ManyToOne(optional = false)
     private Comission idCommission;
@@ -80,13 +84,14 @@ public class Vendeur implements Serializable {
         this.idVendeur = idVendeur;
     }
 
-    public Vendeur(Integer idVendeur, String nomVendeur, String adresseVendeur, String cityVendeur, String emailVendeur, String phoneVendeur) {
+    public Vendeur(Integer idVendeur, String nomVendeur, String adresseVendeur, String cityVendeur, String emailVendeur, String phoneVendeur, String passwordVendeur) {
         this.idVendeur = idVendeur;
         this.nomVendeur = nomVendeur;
         this.adresseVendeur = adresseVendeur;
         this.cityVendeur = cityVendeur;
         this.emailVendeur = emailVendeur;
         this.phoneVendeur = phoneVendeur;
+        this.passwordVendeur = passwordVendeur;
     }
 
     public Integer getIdVendeur() {
@@ -153,13 +158,20 @@ public class Vendeur implements Serializable {
         this.informationVendeur = informationVendeur;
     }
 
-    @XmlTransient
-    public List<Produit> getProduitList() {
-        return produitList;
+    public String getPasswordVendeur() {
+        return passwordVendeur;
     }
 
-    public void setProduitList(List<Produit> produitList) {
-        this.produitList = produitList;
+    public void setPasswordVendeur(String passwordVendeur) {
+        this.passwordVendeur = passwordVendeur;
+    }
+
+    public String getImgVendeur() {
+        return imgVendeur;
+    }
+
+    public void setImgVendeur(String imgVendeur) {
+        this.imgVendeur = imgVendeur;
     }
 
     public Comission getIdCommission() {
@@ -194,5 +206,5 @@ public class Vendeur implements Serializable {
     public String toString() {
         return "model.Vendeur[ idVendeur=" + idVendeur + " ]";
     }
-    
+
 }

@@ -17,13 +17,13 @@
                 <div class="col s3">
                     <%@ include file="searchMenu.jsp" %>
                 </div>
-                <div class="col s9">
+                <div class="col s12 l9">
                     <div class="row">
                         <c:forEach var="produit" items="${produits}">
                             <div class="col s12 m4 l4">
                                 <div class="card animate fadeLeft">
                                     <div class="card-content">
-                                        <div onclick="$('#selectedProduct').val('${produit.getIdProduit()}');$('#button').val('selectedProduct');$('#formHome').submit();">
+                                        <div onclick="$('#selectedProduct').val('${produit.getIdProduit()}');$('#button').val('selectedProduct');$('#form').submit();" style="cursor: pointer;">
                                             <p>${produit.getIdVendeur().getNomVendeur()}</p>
                                             <span class="card-title text-ellipsis">${produit.getNameProduit()}</span>
                                             <img src="${produit.getImgProduit()}" class="responsive-img" alt="">
@@ -52,8 +52,8 @@
                                                 <hr class="mb-5">
                                                 <p class="mt-3">${produit.getDescriptionProduit()}</p>
                                                 <h5>${produit.getPrixStandartProduit()}€</h5>
-                                                <a class="waves-effect waves-light btn marron-chart col s12 input-field">Ajouter au panier</a>
-                                                <a class="waves-effect waves-light btn orange-chart col s12 input-field" onclick="$('#selectedProduct').val('${produit.getIdProduit()}');$('#button').val('selectedProduct');$('#formHome').submit();">Voir le produit</a>
+                                                <a class="waves-effect waves-light btn marron-chart col s12 input-field" onclick="$('#selectedProduct').val('${produit.getIdProduit()}');$('#button').val('addPaner');$('#form').submit();">Ajouter au panier</a>
+                                                <a class="waves-effect waves-light btn orange-chart col s12 input-field" onclick="$('#selectedProduct').val('${produit.getIdProduit()}');$('#button').val('selectedProduct');$('#form').submit();">Voir le produit</a>
                                             </div>
                                         </div>
                                     </div>

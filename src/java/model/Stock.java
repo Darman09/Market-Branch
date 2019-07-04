@@ -12,6 +12,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -38,6 +40,12 @@ public class Stock implements Serializable {
     @Basic(optional = false)
     @Column(name = "id_stock")
     private Integer idStock;
+    @JoinColumn(name = "id_entrepot", referencedColumnName = "id_entrepot")
+    @ManyToOne(optional = false)
+    private Entrepot idEntrepot;
+    @JoinColumn(name = "id_produit", referencedColumnName = "id_produit")
+    @ManyToOne(optional = false)
+    private Produit idProduit;
 
     public Stock() {
     }
@@ -60,6 +68,22 @@ public class Stock implements Serializable {
 
     public void setIdStock(Integer idStock) {
         this.idStock = idStock;
+    }
+
+    public Entrepot getIdEntrepot() {
+        return idEntrepot;
+    }
+
+    public void setIdEntrepot(Entrepot idEntrepot) {
+        this.idEntrepot = idEntrepot;
+    }
+
+    public Produit getIdProduit() {
+        return idProduit;
+    }
+
+    public void setIdProduit(Produit idProduit) {
+        this.idProduit = idProduit;
     }
 
     @Override

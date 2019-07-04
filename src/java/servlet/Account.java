@@ -13,6 +13,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import model.Utilisateur;
 
 @WebServlet(name = "account", urlPatterns = {"/account"}, asyncSupported = true)
 public class Account extends HttpServlet {
@@ -30,9 +32,16 @@ public class Account extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HomeControler data = new HomeControler();
+        HttpSession session = request.getSession();
+        Utilisateur user = (Utilisateur) session.getAttribute("user");
+        System.out.println("servlet.Account.doGet()" + user);
         request.setAttribute("listCategories", data.getListCategories());
-       AsyncContext asynContext = request.startAsync(request, response);
-       asynContext.dispatch("/signin.jsp");
+        if (user.getIdSb() != null) {
+            request.setAttribute("sysBank", data.getSystemBancaireUniq(user.getIdSb().getIdSystemBancaire().toString()));
+            request.setAttribute("commandes", data.getSousCommandesByCommande(user));
+        }
+        AsyncContext asynContext = request.startAsync(request, response);
+        asynContext.dispatch("/account.jsp");
     }
 
     /**
@@ -48,21 +57,20 @@ public class Account extends HttpServlet {
             throws ServletException, IOException {
         String button = request.getParameter("button");
         HomeControler data = new HomeControler();
-        request.setAttribute("test", data.getListCategories());
-        
+        HttpSession session = request.getSession();
         switch (button) {
-            case "commande":
+            case "home":
                 request.setAttribute("data", data.getListCategories());
-                request.getRequestDispatcher("/listeCommandes.jsp").forward(request, response);
-            case "facture" :
+                response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/home"));
+                break;
+            case "panier":
                 request.setAttribute("data", data.getListCategories());
-                request.getRequestDispatcher("/listInvoices.jsp").forward(request, response);
-            case "employe": 
-                request.setAttribute("data", data.getListCategories());
-                request.getRequestDispatcher("/listEmployes.jsp").forward(request, response);
-            case "client": 
-                request.setAttribute("data", data.getListCategories());
-                request.getRequestDispatcher("/listClients.jsp").forward(request, response);
+                response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/panier"));
+                break;
+            case "facture":
+                session.setAttribute("factureId", request.getParameter("factureId"));
+                request.getRequestDispatcher("/infoFacture.jsp").forward(request, response);
+                break;
             default:
                 doGet(request, response);
         }

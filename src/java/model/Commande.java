@@ -7,9 +7,7 @@ package model;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,12 +17,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -37,6 +33,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Commande.findAll", query = "SELECT c FROM Commande c")
     , @NamedQuery(name = "Commande.findByIdCommande", query = "SELECT c FROM Commande c WHERE c.idCommande = :idCommande")
     , @NamedQuery(name = "Commande.findByDateCommande", query = "SELECT c FROM Commande c WHERE c.dateCommande = :dateCommande")
+    , @NamedQuery(name = "Commande.findByIdUtilisateur", query = "SELECT c FROM Commande c WHERE c.idUtilisateur = :idUtilisateur")
     , @NamedQuery(name = "Commande.findByDateLivraison", query = "SELECT c FROM Commande c WHERE c.dateLivraison = :dateLivraison")})
 public class Commande implements Serializable {
 
@@ -48,19 +45,15 @@ public class Commande implements Serializable {
     private Integer idCommande;
     @Basic(optional = false)
     @Column(name = "date_commande")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date dateCommande;
     @Basic(optional = false)
     @Column(name = "date_livraison")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date dateLivraison;
     @JoinColumn(name = "id_utilisateur", referencedColumnName = "id_utilisateur")
     @ManyToOne(optional = false)
     private Utilisateur idUtilisateur;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCommande")
-    private List<CommandeDetails> commandeDetailsList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCommande")
-    private List<Facture> factureList;
 
     public Commande() {
     }
@@ -105,24 +98,6 @@ public class Commande implements Serializable {
 
     public void setIdUtilisateur(Utilisateur idUtilisateur) {
         this.idUtilisateur = idUtilisateur;
-    }
-
-    @XmlTransient
-    public List<CommandeDetails> getCommandeDetailsList() {
-        return commandeDetailsList;
-    }
-
-    public void setCommandeDetailsList(List<CommandeDetails> commandeDetailsList) {
-        this.commandeDetailsList = commandeDetailsList;
-    }
-
-    @XmlTransient
-    public List<Facture> getFactureList() {
-        return factureList;
-    }
-
-    public void setFactureList(List<Facture> factureList) {
-        this.factureList = factureList;
     }
 
     @Override

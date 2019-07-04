@@ -5,7 +5,7 @@
  */
 package servlet;
 
-import controler.SigninControler;
+import controler.HomeControler;
 import java.io.IOException;
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletException;
@@ -14,9 +14,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import model.Utilisateur;
 
-@WebServlet(name = "signin", urlPatterns = {"/signin"}, asyncSupported = true)
-public class Signin extends HttpServlet {
+@WebServlet(name = "panier", urlPatterns = {"/panier"}, asyncSupported = true)
+public class Panier extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -30,8 +31,18 @@ public class Signin extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HomeControler data = new HomeControler();
+        HttpSession session = request.getSession();
+        Utilisateur user = (Utilisateur) session.getAttribute("user");
+        System.out.println("servlet.Account.doGet()" + user);
+        request.setAttribute("listCategories", data.getListCategories());
+        if (user != null) {
+            request.setAttribute("sysBank", data.getSystemBancaireUniq(user.getIdSb().getIdSystemBancaire().toString()));
+            request.setAttribute("commandes", data.getSousCommandesByCommande(user));
+            request.setAttribute("paniers", data.getAllPanierByUser(user));
+        }
         AsyncContext asynContext = request.startAsync(request, response);
-        asynContext.dispatch("/signin.jsp");
+        asynContext.dispatch("/panier.jsp");
     }
 
     /**
@@ -46,25 +57,22 @@ public class Signin extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String button = request.getParameter("button");
-        SigninControler data = new SigninControler();
-        HttpSession session = request.getSession();
-        String userConnect = data.checkUser(request.getParameter("email"), request.getParameter("password"), session);
-        System.out.println("servlet.Signin.doPost()" + userConnect);
+        HomeControler data = new HomeControler();
+        request.setAttribute("test", data.getListCategories());
+
         switch (button) {
-            case "signin":
-                if (userConnect.equals("vendeur")) {
-                    response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/vendeur"));
-                } else if (userConnect.equals("admin")) {
-                    response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/home"));
-                } else if (userConnect.equals("client")) {
-                    response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/home"));
-                } else {
-                    doGet(request, response);
-                }
-                break;
-            case "inscription":
-                response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/inscription"));
-                break;
+            case "commande":
+                request.setAttribute("data", data.getListCategories());
+                request.getRequestDispatcher("/listeCommandes.jsp").forward(request, response);
+            case "facture":
+                request.setAttribute("data", data.getListCategories());
+                request.getRequestDispatcher("/listInvoices.jsp").forward(request, response);
+            case "employe":
+                request.setAttribute("data", data.getListCategories());
+                request.getRequestDispatcher("/listEmployes.jsp").forward(request, response);
+            case "client":
+                request.setAttribute("data", data.getListCategories());
+                request.getRequestDispatcher("/listClients.jsp").forward(request, response);
             default:
                 doGet(request, response);
         }

@@ -5,7 +5,7 @@
         <%@ include file="header.jsp" %>
     </head>
     <body>
-        <form method="POST" action="home" id="formHome">
+        <form method="POST" action="home" id="form">
             <%@ include file="menu.jsp"%>
             <div class="row"></div>
             <div class="row"></div>

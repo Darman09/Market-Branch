@@ -13,6 +13,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 @WebServlet(name = "inscription", urlPatterns = {"/inscription"}, asyncSupported = true)
 public class Inscription extends HttpServlet {
@@ -46,13 +47,10 @@ public class Inscription extends HttpServlet {
             throws ServletException, IOException {
         String button = request.getParameter("button");
         SigninControler data = new SigninControler();
+        HttpSession session = request.getSession();
         switch (button) {
             case "signin":
-                if (data.checkUser(request.getParameter("email"), request.getParameter("password"))) {
-                    request.getRequestDispatcher("/home.jsp").forward(request, response);
-                } else {
-                    doGet(request, response);
-                }
+                response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/signin"));
                 break;
             case "inscription":
                 response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/inscription"));
@@ -61,15 +59,5 @@ public class Inscription extends HttpServlet {
                 doGet(request, response);
         }
     }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
 
 }

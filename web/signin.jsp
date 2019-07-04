@@ -49,7 +49,7 @@
                             </div>
                             <center>
                                 <div class='row'>
-                                    <div class="input-field col s12"><button type='submit' name='btn_login' class='col s12 btn btn-large waves-effect' style="background-color: #cf6818">Connexion</button></div>
+                                    <div class="input-field col s12"><button onclick="$('#button').val('signin');$('#form').submit();" type='submit' name='btn_login' class='col s12 btn btn-large waves-effect' style="background-color: #cf6818">Connexion</button></div>
 
                                     <div class="input-field col s12"><a onclick="$('#button').val('inscription');$('#form').submit();" name='btn_login' class='col s12 btn btn-large waves-effect waves-light' style="background-color: #622e06">Inscription</a></div>
                                 </div>

@@ -5,8 +5,9 @@
  */
 package servlet;
 
-import controler.SigninControler;
+import controler.HomeControler;
 import java.io.IOException;
+import java.math.BigDecimal;
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,9 +15,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import model.Categorie;
+import model.Produit;
+import model.SousCategorie;
+import model.Utilisateur;
 
-@WebServlet(name = "signin", urlPatterns = {"/signin"}, asyncSupported = true)
-public class Signin extends HttpServlet {
+@WebServlet(name = "administration", urlPatterns = {"/administration"}, asyncSupported = true)
+public class Administration extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -30,8 +35,14 @@ public class Signin extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HomeControler data = new HomeControler();
+        HttpSession session = request.getSession();
+        model.Vendeur vendeur = (model.Vendeur) session.getAttribute("vendeur");
+        request.setAttribute("listSsCategorie", data.getListSsCategories());
+        request.setAttribute("listCategorie", data.getListCategories());
+        request.setAttribute("produits", data.getVendeurProduits(vendeur));
         AsyncContext asynContext = request.startAsync(request, response);
-        asynContext.dispatch("/signin.jsp");
+        asynContext.dispatch("/administration.jsp");
     }
 
     /**
@@ -46,38 +57,33 @@ public class Signin extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String button = request.getParameter("button");
-        SigninControler data = new SigninControler();
+        HomeControler data = new HomeControler();
         HttpSession session = request.getSession();
-        String userConnect = data.checkUser(request.getParameter("email"), request.getParameter("password"), session);
-        System.out.println("servlet.Signin.doPost()" + userConnect);
         switch (button) {
-            case "signin":
-                if (userConnect.equals("vendeur")) {
-                    response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/vendeur"));
-                } else if (userConnect.equals("admin")) {
-                    response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/home"));
-                } else if (userConnect.equals("client")) {
-                    response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/home"));
+            case "addCategorie":
+                if (data.addCategorie(request.getParameter("nom_categorie_add"))) {
+                    doGet(request, response);
                 } else {
                     doGet(request, response);
                 }
                 break;
-            case "inscription":
-                response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/inscription"));
+            case "addSsCategorie":
+                data.addSsCategorie(Integer.parseInt(request.getParameter("nom_categorie_categorie_addsouscat")), request.getParameter("nom_categorie_addsouscat"));
+                doGet(request, response);
+                break;
+            case "modifyCategory":
+                Categorie modifyCategoryCat = data.getCategoryById(request.getParameter("nom_categorie_modifycat"));
+                modifyCategoryCat.setNomCategorie(request.getParameter("nom_categorie_modifycatnew"));
+                data.modifyCategory(modifyCategoryCat);
+                doGet(request, response);
+                break;
+            case "deleteCategory":
+                Categorie deleteCategoryCat = data.getCategoryById(request.getParameter("nom_categorie_deletecat"));
+                data.deleteCategory(deleteCategoryCat);
+                doGet(request, response);
                 break;
             default:
                 doGet(request, response);
         }
     }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
 }

@@ -7,6 +7,7 @@ package servlet;
 
 import controler.HomeControler;
 import java.io.IOException;
+import java.math.BigDecimal;
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,12 +15,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import model.Produit;
 import model.SousCategorie;
 import model.Utilisateur;
-import model.Vendeur;
 
-@WebServlet(name = "home", urlPatterns = {"/home"}, asyncSupported = true)
-public class Home extends HttpServlet {
+@WebServlet(name = "vendeur", urlPatterns = {"/vendeur"}, asyncSupported = true)
+public class Vendeur extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -35,20 +36,11 @@ public class Home extends HttpServlet {
             throws ServletException, IOException {
         HomeControler data = new HomeControler();
         HttpSession session = request.getSession();
-        //request.setAttribute("produits", data.getVendeurProduits(new Vendeur(1)));
-        request.setAttribute("listCategories", data.getSousCategoriesByCategorie());
-        if (session.getAttribute("user") instanceof Utilisateur) {
-            Utilisateur user = (Utilisateur) session.getAttribute("user");
-            request.setAttribute("user", session.getAttribute("user"));
-            request.setAttribute("typeUser", user.getIdTypeUtilisateur().getNomTypeUtilisateur());
-        } else if (session.getAttribute("user") instanceof Vendeur) {
-            Vendeur user = (Vendeur) session.getAttribute("user");
-            request.setAttribute("user", session.getAttribute("user"));
-            request.setAttribute("typeUser", "Vendeur");
-        }
-        request.setAttribute("produits", data.getAllProduits());
+        model.Vendeur vendeur = (model.Vendeur) session.getAttribute("vendeur");
+        request.setAttribute("listSsCategorie", data.getListSsCategories());
+        request.setAttribute("produits", data.getVendeurProduits(vendeur));
         AsyncContext asynContext = request.startAsync(request, response);
-        asynContext.dispatch("/home.jsp");
+        asynContext.dispatch("/espaceVendeur.jsp");
     }
 
     /**
@@ -66,6 +58,23 @@ public class Home extends HttpServlet {
         HomeControler data = new HomeControler();
         HttpSession session = request.getSession();
         switch (button) {
+            case "createProduct":
+                Produit product = new Produit();
+                product.setDescriptionProduit(request.getParameter("descriptionProduit"));
+                product.setNameProduit(request.getParameter("nomProduit"));
+                product.setProductCode(request.getParameter("codeProduit"));
+                product.setPrixStandartProduit((BigDecimal.valueOf(Double.valueOf(request.getParameter("prixProduit")))));
+                product.setQuantiteUnitaireProduit(Integer.parseInt(request.getParameter("quantiteProduit")));
+                SousCategorie ssCategorieProduct = data.getSousCategorieById(request.getParameter("ssCategorieProduit"));
+                product.setIdSousCategorieProduit(ssCategorieProduct);
+                product.setImgProduit(request.getParameter("imgProduitUrl"));
+                product.setIdVendeur((model.Vendeur) session.getAttribute("vendeur"));
+                if (data.addProduit(product)) {
+                    response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/vendeur"));
+                } else {
+                    response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/vendeur"));
+                }
+                break;
             case "account":
                 if (session.getAttribute("user") != null) {
                     response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/account"));
@@ -109,9 +118,6 @@ public class Home extends HttpServlet {
                 AsyncContext asynContext = request.startAsync(request, response);
                 asynContext.dispatch("/home.jsp");
                 request.getSession().invalidate();
-                break;
-            case "administration":
-                response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/administration"));
                 break;
             default:
                 doGet(request, response);

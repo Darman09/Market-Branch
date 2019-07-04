@@ -15,6 +15,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -32,8 +34,8 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Utilisateur.findAll", query = "SELECT u FROM Utilisateur u")
+    , @NamedQuery(name = "Utilisateur.findByMailAndPasswordUtilisateur", query = "SELECT u FROM Utilisateur u WHERE u.mailUtilisateur = :mailUtilisateur AND u.passwordUtilisateur = :passwordUtilisateur")
     , @NamedQuery(name = "Utilisateur.findByIdUtilisateur", query = "SELECT u FROM Utilisateur u WHERE u.idUtilisateur = :idUtilisateur")
-    , @NamedQuery(name = "Utilisateur.findByMailAndPassword", query = "SELECT u FROM Utilisateur u WHERE u.mailUtilisateur = :mailUtilisateur AND u.passwordUtilisateur = :passwordUtilisateur")
     , @NamedQuery(name = "Utilisateur.findByNomUtilisateur", query = "SELECT u FROM Utilisateur u WHERE u.nomUtilisateur = :nomUtilisateur")
     , @NamedQuery(name = "Utilisateur.findByPrenomUtilisateur", query = "SELECT u FROM Utilisateur u WHERE u.prenomUtilisateur = :prenomUtilisateur")
     , @NamedQuery(name = "Utilisateur.findByMailUtilisateur", query = "SELECT u FROM Utilisateur u WHERE u.mailUtilisateur = :mailUtilisateur")
@@ -41,6 +43,12 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Utilisateur.findByAdresseLivraison", query = "SELECT u FROM Utilisateur u WHERE u.adresseLivraison = :adresseLivraison")
     , @NamedQuery(name = "Utilisateur.findByAdresseFacturation", query = "SELECT u FROM Utilisateur u WHERE u.adresseFacturation = :adresseFacturation")})
 public class Utilisateur implements Serializable {
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idUser")
+    private List<Panier> panierList;
+
+    @ManyToMany(mappedBy = "utilisateurList")
+    private List<Produit> produitList;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -66,14 +74,17 @@ public class Utilisateur implements Serializable {
     @Basic(optional = false)
     @Column(name = "adresse_facturation")
     private String adresseFacturation;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idUtilisateur")
-    private List<Commande> commandeList;
-    @JoinColumn(name = "id_type_utilisateur", referencedColumnName = "id_type_utilisateur")
-    @ManyToOne(optional = false)
-    private TypeUtilisateur idTypeUtilisateur;
+    @Lob
+    @Column(name = "img_utilisateur")
+    private String imgUtilisateur;
     @JoinColumn(name = "id_sb", referencedColumnName = "id_system_bancaire")
     @ManyToOne
     private SystemBancaire idSb;
+    @JoinColumn(name = "id_type_utilisateur", referencedColumnName = "id_type_utilisateur")
+    @ManyToOne(optional = false)
+    private TypeUtilisateur idTypeUtilisateur;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idUtilisateur")
+    private List<Commande> commandeList;
 
     public Utilisateur() {
     }
@@ -148,13 +159,20 @@ public class Utilisateur implements Serializable {
         this.adresseFacturation = adresseFacturation;
     }
 
-    @XmlTransient
-    public List<Commande> getCommandeList() {
-        return commandeList;
+    public String getImgUtilisateur() {
+        return imgUtilisateur;
     }
 
-    public void setCommandeList(List<Commande> commandeList) {
-        this.commandeList = commandeList;
+    public void setImgUtilisateur(String imgUtilisateur) {
+        this.imgUtilisateur = imgUtilisateur;
+    }
+
+    public SystemBancaire getIdSb() {
+        return idSb;
+    }
+
+    public void setIdSb(SystemBancaire idSb) {
+        this.idSb = idSb;
     }
 
     public TypeUtilisateur getIdTypeUtilisateur() {
@@ -165,12 +183,13 @@ public class Utilisateur implements Serializable {
         this.idTypeUtilisateur = idTypeUtilisateur;
     }
 
-    public SystemBancaire getIdSb() {
-        return idSb;
+    @XmlTransient
+    public List<Commande> getCommandeList() {
+        return commandeList;
     }
 
-    public void setIdSb(SystemBancaire idSb) {
-        this.idSb = idSb;
+    public void setCommandeList(List<Commande> commandeList) {
+        this.commandeList = commandeList;
     }
 
     @Override
@@ -196,6 +215,24 @@ public class Utilisateur implements Serializable {
     @Override
     public String toString() {
         return "model.Utilisateur[ idUtilisateur=" + idUtilisateur + " ]";
+    }
+
+    @XmlTransient
+    public List<Produit> getProduitList() {
+        return produitList;
+    }
+
+    public void setProduitList(List<Produit> produitList) {
+        this.produitList = produitList;
+    }
+
+    @XmlTransient
+    public List<Panier> getPanierList() {
+        return panierList;
+    }
+
+    public void setPanierList(List<Panier> panierList) {
+        this.panierList = panierList;
     }
 
 }

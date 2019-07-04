@@ -46,11 +46,11 @@ public class SousCategorie implements Serializable {
     @Basic(optional = false)
     @Column(name = "nom_sous_categorie")
     private String nomSousCategorie;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idSousCategorieProduit")
-    private List<Produit> produitList;
     @JoinColumn(name = "id_categorie", referencedColumnName = "id_categorie")
     @ManyToOne(optional = false)
     private Categorie idCategorie;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idSousCategorieProduit")
+    private List<Produit> produitList;
 
     public SousCategorie() {
     }
@@ -80,6 +80,14 @@ public class SousCategorie implements Serializable {
         this.nomSousCategorie = nomSousCategorie;
     }
 
+    public Categorie getIdCategorie() {
+        return idCategorie;
+    }
+
+    public void setIdCategorie(Categorie idCategorie) {
+        this.idCategorie = idCategorie;
+    }
+
     @XmlTransient
     public List<Produit> getProduitList() {
         return produitList;
@@ -87,14 +95,6 @@ public class SousCategorie implements Serializable {
 
     public void setProduitList(List<Produit> produitList) {
         this.produitList = produitList;
-    }
-
-    public Categorie getIdCategorie() {
-        return idCategorie;
-    }
-
-    public void setIdCategorie(Categorie idCategorie) {
-        this.idCategorie = idCategorie;
     }
 
     @Override
@@ -121,5 +121,5 @@ public class SousCategorie implements Serializable {
     public String toString() {
         return "model.SousCategorie[ idSousCategorie=" + idSousCategorie + " ]";
     }
-    
+
 }

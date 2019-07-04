@@ -6,7 +6,9 @@
 package model;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,8 +16,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -47,6 +51,8 @@ public class Entrepot implements Serializable {
     @Basic(optional = false)
     @Column(name = "libelle_entrepot")
     private String libelleEntrepot;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idEntrepot")
+    private List<Stock> stockList;
 
     public Entrepot() {
     }
@@ -92,6 +98,15 @@ public class Entrepot implements Serializable {
 
     public void setLibelleEntrepot(String libelleEntrepot) {
         this.libelleEntrepot = libelleEntrepot;
+    }
+
+    @XmlTransient
+    public List<Stock> getStockList() {
+        return stockList;
+    }
+
+    public void setStockList(List<Stock> stockList) {
+        this.stockList = stockList;
     }
 
     @Override
