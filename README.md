@@ -44,6 +44,6 @@ Le projet s'est déroulé en 4 jours de développement: </br>
 <b>Base de données : </b>MySQL Workbench</br>
 <b>IDE : </b>Netbeans 8.2</br>
 
-## Configurations :
+## Configurations
 <b>Serveur d'applications : </b>Glassgish 4.1.2</br>
 <b>Base de données : </b>MySQL Mariadb 10.1.38</br>
